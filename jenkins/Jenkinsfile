@@ -30,6 +30,13 @@ pipeline {
                 sh 'cd app/backend && npm run build || echo "No build step yet"'
             }
         }
+
+        stage('Syntax Check') {
+       steps {
+        sh 'cd app/backend && node index.js'
+    }
+}
+
     }
 
     post {
