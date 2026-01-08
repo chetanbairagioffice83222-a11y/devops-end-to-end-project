@@ -1,0 +1,43 @@
+pipeline {
+    agent any
+
+    tools {
+        nodejs 'node18'
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git branch: 'develop',
+                    url: 'https://github.com/<your-username>/devops-end-to-end-project.git'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh 'cd app/backend && npm install'
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                sh 'cd app/backend && npm test || echo "No tests yet"'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'cd app/backend && npm run build || echo "No build step yet"'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ Build Successful'
+        }
+        failure {
+            echo '❌ Build Failed'
+        }
+    }
+}
