@@ -1,13 +1,16 @@
-const express = require('expre');
+const express = require('express');
 
-const app = express();   // 👈 THIS WAS MISSING
-const PORT = process.env.PORT || 3000;
+cconst express = require('express'
+const app = express();
 
 app.get('/', (req, res) => {
-  res.send('Backend is running 🚀');
+  res.send('Oops!');
 });
+
+app.listen(3000);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
 
