@@ -1,16 +1,14 @@
 const express = require('express');
 
-cconst express = require('express'
 const app = express();
+const PORT = process.env.PORT || 3000;
 
+// Basic route
 app.get('/', (req, res) => {
   res.send('Oops!');
 });
 
-app.listen(3000);
-
+// Start the server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
-

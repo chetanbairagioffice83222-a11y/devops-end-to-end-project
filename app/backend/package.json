@@ -1,21 +1,21 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Simple Express backend",
   "main": "index.js",
+  "type": "commonjs",
   "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
     "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
   }
-  ,
-  "scripts": {
-  "start": "node index.js"
-  }
-
 }
