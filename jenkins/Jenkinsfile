@@ -32,7 +32,8 @@ pipeline {
             }
         }
 
-      
+    } // end of stages
+
     post {
         success {
             echo '✅ Pipeline Successful'
@@ -41,4 +42,5 @@ pipeline {
             echo '❌ Pipeline Failed'
         }
     }
-}
+
+} // end of pipeline
