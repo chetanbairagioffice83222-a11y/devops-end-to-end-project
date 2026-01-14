@@ -39,6 +39,20 @@ pipeline {
             }
         }
 
+
+        stage('SonarQube Analysis') {
+    steps {
+        withSonarQubeEnv('SonarQube') {
+            sh '''
+              sonar-scanner \
+              -Dsonar.projectKey=devops-end-to-end \
+              -Dsonar.sources=app/backend
+            '''
+        }
+    }
+}
+
+
     }
 
     post {
