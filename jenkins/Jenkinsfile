@@ -41,16 +41,16 @@ pipeline {
 
 
         stage('SonarQube Analysis') {
+    environment {
+        SCANNER_HOME = tool 'SonarScanner'
+    }
     steps {
-        script {
-            def scannerHome = tool 'SonarScanner'
-            withSonarQubeEnv('SonarQube') {
-                sh """
-                  ${scannerHome}/bin/sonar-scanner \
-                  -Dsonar.projectKey=devops-end-to-end \
-                  -Dsonar.sources=app/backend
-                """
-            }
+        withSonarQubeEnv('SonarQube') {
+            sh """
+              ${SCANNER_HOME}/bin/sonar-scanner \
+              -Dsonar.projectKey=devops-end-to-end \
+              -Dsonar.sources=app/backend
+            """
         }
     }
 }
