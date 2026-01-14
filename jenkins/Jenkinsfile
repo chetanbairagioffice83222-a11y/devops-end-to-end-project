@@ -16,29 +16,34 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'cd app/backend && npm install'
+                sh 'cd app/backend && npm ci'
             }
         }
-         
-         stage('Syntax Check') {
-    steps {
-        sh 'cd app/backend && node --check index.js'
-    }
-}
+
+        stage('Syntax Check') {
+            steps {
+                sh 'cd app/backend && node --check index.js'
+            }
+        }
 
         stage('Run Tests') {
             steps {
-                sh 'cd app/backend && npm test || echo "No tests yet"'
+                sh 'cd app/backend && npm test'
             }
         }
 
-        stage('Run Server (Dev Mode)') {
+        stage('SonarQube Analysis') {
+            environment {
+                SCANNER_HOME = tool 'SonarScanner'
+            }
             steps {
-                // Start nodemon in the background
-                sh 'cd app/backend && npm run dev &'
+                withSonarQubeEnv('SonarQube') {
+                    sh """
+                        ${SCANNER_HOME}/bin/sonar-scanner
+                    """
+                }
             }
         }
-
     }
 
     post {
