@@ -19,43 +19,34 @@ pipeline {
                 sh 'cd app/backend && npm install'
             }
         }
-         
-         stage('Syntax Check') {
-    steps {
-        sh 'cd app/backend && node --check index.js'
-    }
-}
+
+        stage('Syntax Check') {
+            steps {
+                sh 'cd app/backend && node --check index.js'
+            }
+        }
 
         stage('Run Tests') {
             steps {
-                sh 'cd app/backend && npm test || echo "No tests yet"'
+                sh 'cd app/backend && npm test'
             }
         }
-
-        stage('Run Server (Dev Mode)') {
-            steps {
-                // Start nodemon in the background
-                sh 'cd app/backend && npm run dev &'
-            }
-        }
-
 
         stage('SonarQube Analysis') {
-    environment {
-        SCANNER_HOME = tool 'SonarScanner'
-    }
-    steps {
-        withSonarQubeEnv('SonarQube') {
-            sh """
-              ${SCANNER_HOME}/bin/sonar-scanner \
-              -Dsonar.projectKey=devops-end-to-end \
-              -Dsonar.sources=app/backend
-            """
+            environment {
+                SCANNER_HOME = tool 'SonarScanner'
+            }
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    sh """
+                      echo "Using SonarScanner at: ${SCANNER_HOME}"
+                      ${SCANNER_HOME}/bin/sonar-scanner \
+                      -Dsonar.projectKey=devops-end-to-end \
+                      -Dsonar.sources=app/backend
+                    """
+                }
+            }
         }
-    }
-}
-
-
     }
 
     post {
