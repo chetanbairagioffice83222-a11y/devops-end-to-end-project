@@ -1,8 +1,17 @@
 pipeline {
     agent any
 
+    options {
+        skipDefaultCheckout(true)
+        timestamps()
+    }
+
     tools {
         nodejs 'node18'
+    }
+
+    environment {
+        NODE_ENV = 'development'
     }
 
     stages {
@@ -14,36 +23,49 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
+        // All backend steps wrapped in dir to avoid repeated cd
+        stage('Backend Build & Test') {
             steps {
-                sh 'cd app/backend && npm ci'
+                dir('app/backend') {
+
+                    stage('Install Dependencies') {
+                        steps {
+                            sh 'npm ci'
+                        }
+                    }
+
+                    stage('Syntax Check') {
+                        steps {
+                            sh 'node --check index.js'
+                        }
+                    }
+
+                    stage('Run Tests') {
+                        steps {
+                            sh 'npm test'
+                        }
+                    }
+
+                    stage('SonarQube Analysis') {
+    steps {
+        script {
+            def scannerHome = tool 'SonarScanner'
+            withSonarQubeEnv('SonarQube') {
+                sh "${scannerHome}/bin/sonar-scanner " +
+                   "-Dsonar.projectKey=devops-end-to-end " +
+                   "-Dsonar.projectName=Sonarqube07 " +
+                   "-Dsonar.sources=app/backend " +
+                   "-Dsonar.sourceEncoding=UTF-8"
+            }
+        }
+    }
+}
+
+
+                } // end dir
             }
         }
 
-        stage('Syntax Check') {
-            steps {
-                sh 'cd app/backend && node --check index.js'
-            }
-        }
-
-        stage('Run Tests') {
-            steps {
-                sh 'cd app/backend && npm test'
-            }
-        }
-
-        stage('SonarQube Analysis') {
-            environment {
-                SCANNER_HOME = tool 'SonarScanner'
-            }
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh """
-                        ${SCANNER_HOME}/bin/sonar-scanner
-                    """
-                }
-            }
-        }
     }
 
     post {
