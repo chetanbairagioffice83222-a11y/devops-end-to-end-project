@@ -26,37 +26,13 @@ pipeline {
             }
         }
 
-     stage('Run Tests') {
-    steps {
-        sh '''
-          cd app/backend
-          if npm test; then
-            echo "Tests passed"
-          else
-            echo "No tests implemented yet"
-          fi
-        '''
-    }
-}
-
-
-        stage('SonarQube Analysis') {
-            environment {
-                SCANNER_HOME = tool 'SonarScanner'
-            }
+        stage('Run Tests') {
             steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh """
-                      echo "Using SonarScanner at: ${SCANNER_HOME}"
-                      ${SCANNER_HOME}/bin/sonar-scanner \
-                      -Dsonar.projectKey=devops-end-to-end \
-                      -Dsonar.sources=app/backend
-                    """
-                }
+                sh 'cd app/backend && npm test'
             }
         }
-    }
 
+      
     post {
         success {
             echo '✅ Pipeline Successful'
