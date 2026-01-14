@@ -23,46 +23,55 @@ pipeline {
             }
         }
 
-        // All backend steps wrapped in dir to avoid repeated cd
-        stage('Backend Build & Test') {
+        stage('Install Dependencies') {
             steps {
                 dir('app/backend') {
-
-                    stage('Install Dependencies') {
-                        steps {
-                            sh 'npm ci'
-                        }
-                    }
-
-                    stage('Syntax Check') {
-                        steps {
-                            sh 'node --check index.js'
-                        }
-                    }
-
-                    stage('Run Tests') {
-                        steps {
-                            sh 'npm test'
-                        }
-                    }
-
-                    stage('SonarQube Analysis') {
-    steps {
-        script {
-            def scannerHome = tool 'SonarScanner'
-            withSonarQubeEnv('SonarQube') {
-                sh "${scannerHome}/bin/sonar-scanner " +
-                   "-Dsonar.projectKey=devops-end-to-end " +
-                   "-Dsonar.projectName=Sonarqube07 " +
-                   "-Dsonar.sources=app/backend " +
-                   "-Dsonar.sourceEncoding=UTF-8"
+                    sh 'npm ci'
+                }
             }
         }
-    }
-}
 
+        stage('Syntax Check') {
+            steps {
+                dir('app/backend') {
+                    sh 'node --check index.js'
+                }
+            }
+        }
 
-                } // end dir
+        stage('Run Tests') {
+            steps {
+                dir('app/backend') {
+                    sh 'npm test'
+                }
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                dir('app/backend') {
+                    script {
+                        def scannerHome = tool 'SonarScanner'
+                        withSonarQubeEnv('SonarQube') {
+                            sh "${scannerHome}/bin/sonar-scanner " +
+                               "-Dsonar.projectKey=devops-end-to-end " +
+                               "-Dsonar.projectName=Sonarqube07 " +
+                               "-Dsonar.sources=. " +
+                               "-Dsonar.sourceEncoding=UTF-8"
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                script {
+                    // Wait for SonarQube quality gate result and fail the pipeline if it fails
+                    timeout(time: 10, unit: 'MINUTES') {
+                        waitForQualityGate abortPipeline: true
+                    }
+                }
             }
         }
 
