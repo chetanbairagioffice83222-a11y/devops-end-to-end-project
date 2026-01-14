@@ -64,6 +64,20 @@ pipeline {
             }
         }
 
+
+
+stage('Lint Code') {
+    steps {
+        dir('app/backend') {
+            sh 'npx eslint .'
+        }
+    }
+}
+
+
+
+
+
         stage('Quality Gate') {
             steps {
                 script {
